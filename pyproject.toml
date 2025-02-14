@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biosigx"
+version = "0.1.0"
+description = "Biological signal classification using deep learning"
+readme = "README.md"
+requires-python = ">=3.12" # Compatible with tensorflow 2.18
+license = {text = "MIT"}
+authors = [
+    {name = "ai-mindset", email = "your.email@example.com"}
+]
+dependencies = [
+    "pydantic>=2.10.6",
+    "tensorflow>=2.18.0",
+    "numpy>=2.0.2", # Compatible with tensorflow 2.18
+    "scipy>=1.15.1",
+    "matplotlib>=3.10.0",
+    "pyqt5>=5.15.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.9.3", # An extremely fast Python linter and code formatter, written in Rust
+    "ipython>=8.31.0", # IPython: Productive Interactive Computing
+    "ipdb>=0.13.13", # IPython-enabled pdb
+    "tqdm>=4.67.1", # Fast, Extensible Progress Meter
+]
+
+[tool.ruff]
+lint.select = [
+    "E",  # pycodestyle errors
+    "F",  # pyflakes
+    "B",  # flake8-bugbear
+    "I",  # isort
+    "C",  # mccabe complexity
+    "N",  # pep8-naming
+    "UP", # pyupgrade
+    "RUF", # ruff-specific rules
+    "D",  # pydocstyle
+]
+ignore = ["N805"]  # First argument of a method should be named 'self'
+line-length = 90
+target-version = "py312" # Compatible with tensorflow 2.18
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
