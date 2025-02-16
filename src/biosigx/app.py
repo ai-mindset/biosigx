@@ -16,6 +16,7 @@ from dataclasses import dataclass
 import keras
 import matplotlib
 import matplotlib.pyplot as plt
+import neurokit2 as nk
 import numpy as np
 import numpy.typing as npt
 from matplotlib.animation import FuncAnimation
@@ -24,9 +25,12 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from pydantic import BaseModel, Field, field_validator
 from scipy import signal as sig
+from sklearn.model_selection import load_model, train_test_split
 
-plt.switch_backend("qt5agg")
-matplotlib.use("qt5agg")
+plt.switch_backend("qtagg")
+matplotlib.use("qtagg")
+
+# https://github.com/neuropsychology/NeuroKit?tab=readme-ov-file#quick-example
 
 
 # %% Data Models
@@ -63,6 +67,20 @@ class Signal1D(BaseModel):
 
 
 # %% Sample Data Generation
+ecg = nk.ecg_simulate(duration=10, heart_rate=70)
+# Process it
+signals, info = nk.ecg_process(ecg, sampling_rate=250)
+
+# Visualise the processing
+nk.ecg_plot(signals, info)
+rsp = nk.rsp_simulate(duration=60, sampling_rate=250, respiratory_rate=15)
+# Process it
+signals, info = nk.rsp_process(rsp, sampling_rate=250)
+
+# Visualise the processing
+nk.rsp_plot(signals, info)
+
+
 def generate_ecg(duration_s: float, sampling_rate: float) -> Signal1D:
     """Generate synthetic ECG with possible arrhythmia.
 
@@ -87,37 +105,6 @@ def generate_ecg(duration_s: float, sampling_rate: float) -> Signal1D:
 
     return Signal1D(
         data=signal.astype(np.float64), sampling_rate=sampling_rate, signal_type="ECG"
-    )
-
-
-def generate_respiratory(duration_s: float, sampling_rate: float) -> Signal1D:
-    """Generate synthetic respiratory signal with possible apnea.
-
-    Args:
-        duration_s: Signal duration in seconds
-        sampling_rate: Sampling frequency in Hz
-
-    Returns:
-        Signal1D: Synthetic respiratory signal
-
-    Example:
-        >>> resp = generate_respiratory(duration_s=2.0, sampling_rate=50)
-        >>> isinstance(resp.data, np.ndarray) and resp.sampling_rate == 50
-        True
-
-    """
-    t = np.linspace(0, duration_s, int(duration_s * sampling_rate))
-    normal = np.sin(2 * np.pi * 0.2 * t)
-
-    apnea_mask = np.ones_like(t)
-    apnea_start = int(len(t) * 0.4)
-    apnea_duration = int(len(t) * 0.1)
-    apnea_mask[apnea_start : apnea_start + apnea_duration] = 0
-
-    signal = normal * apnea_mask
-
-    return Signal1D(
-        data=signal.astype(np.float64), sampling_rate=sampling_rate, signal_type="RESP"
     )
 
 
@@ -350,3 +337,32 @@ if __name__ == "__main__":
         loss="sparse_categorical_crossentropy",
         metrics=["accuracy"],
     )
+
+    # Assuming you have your data in X and y (features and labels respectively)
+    # Example data generation for demonstration purposes
+    X = np.random.rand(
+        1000, 2500, 1
+    )  # 1000 samples, each of length 2500 with a single channel
+    y = np.random.randint(0, 2, size=1000)  # Binary labels
+
+    # Step 3: Train the Model
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.2, random_state=42
+    )
+    model.fit(X_train, y_train, epochs=10, batch_size=32, validation_data=(X_val, y_val))
+
+    # Step 4: Evaluate the Model
+    loss, accuracy = model.evaluate(X_val, y_val)
+    print(f"Validation Accuracy: {accuracy}")
+
+    # Step 5: Save the Model
+    model.save("my_cnn_model.h5")
+
+    # Step 6: Load the Model for Inference
+    loaded_model = load_model("my_cnn_model.h5")
+
+    # Step 7: Perform Inference
+    new_data = np.random.rand(1, 2500, 1)  # New data point for inference
+    predictions = loaded_model.predict(new_data)
+    predicted_class = np.argmax(predictions, axis=1)[0]
+    print(f"Predicted Class: {predicted_class}")
