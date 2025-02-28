@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=75", "wheel"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,45 +7,52 @@ name = "biosigx"
 version = "0.1.0"
 description = "Biological signal classification using deep learning"
 readme = "README.md"
-requires-python = ">=3.12" # Compatible with tensorflow 2.18
+requires-python = ">=3.12" # NOTE: Compatible with tensorflow 2.18
 license = {text = "MIT"}
 authors = [
     {name = "ai-mindset", email = "your.email@example.com"}
 ]
 dependencies = [
-    "pydantic>=2.10.6",
-    "tensorflow>=2.18.0",
-    "numpy>=2.0.2", # Compatible with tensorflow 2.18
-    "scipy>=1.15.1",
-    "matplotlib>=3.10.0",
-    "pyqt5>=5.15.11",
+    # "scipy>=1.15.1", # Fundamental algorithms for scientific computing in Python
+    "pydantic>=2.10.6", # Data validation using Python type hints
+    "keras>=3.8.0", # Multi-backend Keras
+    "tensorflow>=2.18.0", # TensorFlow is an open source machine learning framework for everyone.
+    "numpy>=2.0.2", # Fundamental package for array computing in Python # NOTE: Compatible with tensorflow 2.18
+    "scikit-learn>=1.6.1", # A set of python modules for machine learning and data mining
+    "neurokit2>=0.2.10", # The Python Toolbox for Neurophysiological Signal Processing.
+    "matplotlib>=3.10.0", # Python plotting package
 ]
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.9.3", # An extremely fast Python linter and code formatter, written in Rust
+    "ruff>=0.9.6", # An extremely fast Python linter and code formatter, written in Rust
+    "pyright>=1.1.394", # Command line wrapper for pyright
     "ipython>=8.31.0", # IPython: Productive Interactive Computing
+    "pyqt5>=5.15.11", # Python bindings for the Qt cross platform application toolkit
     "ipdb>=0.13.13", # IPython-enabled pdb
     "tqdm>=4.67.1", # Fast, Extensible Progress Meter
 ]
 
+[tool.setuptools.packages.find]
+where = ["src"]  # ["."] by default
+
 [tool.ruff]
 lint.select = [
-    "E",  # pycodestyle errors
-    "F",  # pyflakes
-    "B",  # flake8-bugbear
     "I",  # isort
-    "C",  # mccabe complexity
-    "N",  # pep8-naming
-    "UP", # pyupgrade
     "RUF", # ruff-specific rules
     "D",  # pydocstyle
 ]
-ignore = ["N805"]  # First argument of a method should be named 'self'
+
 line-length = 90
-target-version = "py312" # Compatible with tensorflow 2.18
+target-version = "py312" # NOTE: Compatible with tensorflow 2.18
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+docstring-code-format = true
 line-ending = "lf"
+
+[tool.pyright]
+include = ["src"]
+exclude = ["**/__pycache__"]
+# typeCheckingMode = "strict"
