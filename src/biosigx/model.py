@@ -19,6 +19,13 @@ import numpy as np
 from keras import layers
 from numpy.typing import NDArray
 
+from biosigx.logger import setup_logger
+
+# %% [markdown]
+# ## Logger Setup
+# %%
+logger = setup_logger()
+
 
 # %%
 def build_model(
@@ -108,4 +115,4 @@ if __name__ == "__main__":
     # Test threshold computation with dummy data
     dummy_data = np.random.normal(size=(100, sequence_length, 1))
     threshold = compute_threshold(model, dummy_data)
-    print(f"Computed threshold: {threshold:.6f}")
+    logger.info(f"Computed threshold: {threshold:.6f}")

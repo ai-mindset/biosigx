@@ -1,7 +1,9 @@
 """Set up and use a logging system with configurable levels and console output."""
 
 # %%
+import inspect
 import logging
+import os
 from typing import Literal
 
 # %% [markdown]
@@ -18,39 +20,56 @@ from typing import Literal
 
 
 # %%
-def setup_logger(level: str | Literal[0, 10, 20, 30, 40, 50] = "INFO") -> logging.Logger:
+def setup_logger(
+    level: str | Literal[0, 10, 20, 30, 40, 50] = "INFO",
+    module_name: str | None = None,
+) -> logging.Logger:
     """Set up a logger with specified level and console output.
 
     Args:
-        level (str or int): The logging level as a string ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL') or an integer value (10, 20, 30, 40, 50). Default is 'INFO'.
+        level (str or int): The logging level as a string ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
+                          or an integer value (10, 20, 30, 40, 50). Default is 'INFO'.
+        module_name (str | None): Optional module name override. If None, automatically determined from call stack.
 
     Returns:
         logging.Logger: A configured logger object with console handler and specified format.
 
     Examples:
-        >>> setup_logger(level="DEBUG").info("This is a debug message")
-
+        >>> logger = setup_logger()  # Automatically captures module name
+        >>> logger.info("This is an info message")
     """
+    # Automatically determine the module name if not explicitly provided
+    if module_name is None:
+        frame = inspect.stack()[1]
+        # Get the filename of the calling module
+        module_file = os.path.basename(frame[0].f_code.co_filename)
+        # Remove the .py extension if present
+        module_name = os.path.splitext(module_file)[0]
+
     # Create a logger object
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger(module_name)
 
-    # Set the overall logging level of the logger
-    logger.setLevel(level)
+    # Only add handler if the logger doesn't already have handlers
+    if not logger.handlers:
+        # Set the overall logging level of the logger
+        logger.setLevel(level)
 
-    # Create a console handler (outputs to terminal)
-    ch = logging.StreamHandler()
+        # Create a console handler (outputs to terminal)
+        ch = logging.StreamHandler()
 
-    # Set the logging level for the handler
-    ch.setLevel(level)
+        # Set the logging level for the handler
+        ch.setLevel(level)
 
-    # Create a formatter that specifies the format of log messages
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        # Create a formatter that specifies the format of log messages
+        formatter = logging.Formatter(
+            "%(asctime)s - Module: %(name)s - Level: %(levelname)s - Message: %(message)s"
+        )
 
-    # Attach the formatter to the handler
-    ch.setFormatter(formatter)
+        # Attach the formatter to the handler
+        ch.setFormatter(formatter)
 
-    # Add the handler to the logger
-    logger.addHandler(ch)
+        # Add the handler to the logger
+        logger.addHandler(ch)
 
     return logger
 
@@ -60,8 +79,8 @@ def setup_logger(level: str | Literal[0, 10, 20, 30, 40, 50] = "INFO") -> loggin
 
 # %%
 if __name__ == "__main__":
-    # Set up the logger with INFO level
-    logger = setup_logger(logging.INFO)
+    # Set up the logger with INFO level - module name will be auto-detected
+    logger = setup_logger()
 
     # Log messages at different levels
     logger.debug("This is a debug message.")

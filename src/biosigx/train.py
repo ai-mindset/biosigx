@@ -16,7 +16,13 @@ import keras
 import numpy as np
 from numpy.typing import NDArray
 
+from biosigx.logger import setup_logger
 from biosigx.model import compute_threshold
+
+# %% [markdown]
+# ## Logger Setup
+# %%
+logger = setup_logger()
 
 
 # %%
@@ -146,5 +152,7 @@ if __name__ == "__main__":
 
     # Detect anomalies
     anomalies = detect_anomalies(model, anomaly_sequences, threshold)
-    print(f"Detected {np.sum(anomalies)} anomalies out of {len(anomalies)} sequences")
-    print(f"First sequence (should be anomalous): {anomalies[0]}")
+    logger.info(
+        f"Detected {np.sum(anomalies)} anomalies out of {len(anomalies)} sequences"
+    )
+    logger.info(f"First sequence (should be anomalous): {anomalies[0]}")

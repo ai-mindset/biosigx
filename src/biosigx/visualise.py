@@ -18,6 +18,13 @@ import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
 
+from biosigx.logger import setup_logger
+
+# %% [markdown]
+# ## Logger Setup
+# %%
+logger = setup_logger()
+
 
 # %%
 def plot_time_series(

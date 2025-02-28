@@ -18,6 +18,13 @@ import pandas as pd
 from numpy.typing import NDArray
 from sklearn.preprocessing import StandardScaler
 
+from biosigx.logger import setup_logger
+
+# %% [markdown]
+# ## Logger Setup
+# %%
+logger = setup_logger()
+
 
 # %%
 def load_data(data_file: str) -> pd.DataFrame:
@@ -131,12 +138,12 @@ if __name__ == "__main__":
 
     # Load data from the temporary file
     df = load_data(temp_file_path)
-    print(f"Loaded data shape: {df.shape}")
+    logger.info(f"Loaded data shape: {df.shape}")
 
     sequences, scaler = process_data(df, sequence_length=2)
-    print(f"Processed sequences shape: {sequences.shape}")
-    print(f"Scaler mean: {scaler.mean_}")
-    print(f"Scaler scale: {scaler.scale_}")
+    logger.info(f"Processed sequences shape: {sequences.shape}")
+    logger.info(f"Scaler mean: {scaler.mean_}")
+    logger.info(f"Scaler scale: {scaler.scale_}")
 
     # Optionally, you can remove the temporary file after use
     import os

@@ -24,6 +24,7 @@ from numpy.typing import NDArray
 from sklearn.model_selection import train_test_split
 
 from biosigx.data import load_data, process_data
+from biosigx.logger import setup_logger
 from biosigx.model import build_model
 from biosigx.train import detect_anomalies, train_model
 from biosigx.visualise import (
@@ -32,6 +33,12 @@ from biosigx.visualise import (
     plot_training_history,
     visualise_reconstruction,
 )
+
+# %% [markdown]
+# ## Logger Setup
+
+# %%
+logger = setup_logger()
 
 
 # %%
@@ -71,31 +78,33 @@ def run_anomaly_detection(
 
     """
     # Load data
-    print("Loading data...")
+    logger.info("Loading data...")
     df = load_data(data)
 
     # Process data into sequences
-    print("Processing data...")
+    logger.info("Processing data...")
     sequences, scaler = process_data(df, sequence_length)
 
     # Split into train and test sets
-    print(f"Splitting data into train/test sets ({1 - test_size:.0%}/{test_size:.0%})...")
+    logger.info(
+        f"Splitting data into train/test sets ({1 - test_size:.0%}/{test_size:.0%})..."
+    )
     train_sequences, test_sequences = train_test_split(
         sequences, test_size=test_size, shuffle=False
     )
 
     # Build model
-    print("Building model...")
+    logger.info("Building model...")
     model = build_model(sequence_length)
 
     # Train model
-    print("Training model...")
+    logger.info("Training model...")
     model, threshold = train_model(
         model, train_sequences, batch_size=batch_size, epochs=epochs
     )
 
     # Detect anomalies
-    print("Detecting anomalies...")
+    logger.info("Detecting anomalies...")
     train_predictions = model.predict(train_sequences, verbose=0)
     test_predictions = model.predict(test_sequences, verbose=0)
 
@@ -110,10 +119,10 @@ def run_anomaly_detection(
     all_anomalies = np.concatenate([train_anomalies, test_anomalies])
 
     # Print summary
-    print(
+    logger.info(
         f"Detected {np.sum(all_anomalies)} anomalies out of {len(all_anomalies)} sequences"
     )
-    print(f"Anomaly rate: {np.mean(all_anomalies):.2%}")
+    logger.info(f"Anomaly rate: {np.mean(all_anomalies):.2%}")
 
     # Visualize if requested
     if visualise:
@@ -162,7 +171,7 @@ if __name__ == "__main__":
     import tempfile
 
     # Generate synthetic data (sine wave with anomalies)
-    print("Generating synthetic data...")
+    logger.info("Generating synthetic data...")
     t = np.linspace(0, 50, 5000)
     values = np.sin(t) + 0.1 * np.random.randn(len(t))
 
@@ -176,7 +185,7 @@ if __name__ == "__main__":
 
     # Create a temporary file and write the data to it
     with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".csv") as temp_file:
-        print(f"Writing synthetic data to {temp_file.name}")
+        logger.info(f"Writing synthetic data to {temp_file.name}")
         temp_file.write(data)
 
     # Run anomaly detection
@@ -189,4 +198,4 @@ if __name__ == "__main__":
     # Optionally, you can delete the temporary file if it's no longer needed
     os.remove(temp_file.name)
 
-    print("Anomaly detection completed successfully!")
+    logger.info("Anomaly detection completed successfully!")
