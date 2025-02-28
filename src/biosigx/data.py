@@ -12,6 +12,7 @@ sequence creation for training autoencoder models.
 # converting it into properly formatted sequences for model training.
 
 # %%
+import ipdb
 import numpy as np
 import pandas as pd
 from numpy.typing import NDArray
@@ -19,22 +20,29 @@ from sklearn.preprocessing import StandardScaler
 
 
 # %%
-def load_data(data: str) -> pd.DataFrame:
-    """Load timeseries data from a string.
+def load_data(data_file: str) -> pd.DataFrame:
+    """Load timeseries data from a file.
 
     Args:
-        data: CSV-formatted string containing time series data
+        data_file (str): Path to the CSV file containing time series data
 
     Returns:
-        DataFrame with loaded time series data
+        pd.DataFrame: DataFrame with loaded time series data
 
-    >>> data = "1.0,2.0,3.0\\n4.0,5.0,6.0"
-    >>> df = load_data(data)
-    >>> df.shape[0]
-    2
+    Example:
+        >>> import tempfile
+        >>> # Create a temporary file and write some CSV data to it
+        >>> temp = tempfile.NamedTemporaryFile(delete=False, mode="w+t")
+        >>> _ = temp.write("1.0,2.0,3.0\\n4.0,5.0,6.0")
+        >>> temp.flush()
+        >>> df = load_data(temp.name)
+        >>> df.shape[0]
+        2
+        >>> # Clean up the temporary file after use
+        >>> os.unlink(temp.name)
 
     """
-    return pd.read_csv(data, header=None)
+    return pd.read_csv(data_file, header=None)
 
 
 # %%

@@ -23,6 +23,7 @@ from numpy.typing import NDArray
 def plot_time_series(
     data: pd.DataFrame | NDArray[np.float64],
     anomalies: NDArray[np.bool_] | None = None,
+    sequence_length: int | None = None,
     title: str = "Time Series Data",
     figsize: tuple[int, int] = (12, 6),
 ) -> None:
@@ -30,18 +31,10 @@ def plot_time_series(
 
     Args:
         data: Time series data to plot
-        anomalies: Boolean array indicating which points are anomalies
+        anomalies: Boolean array indicating which points/sequences are anomalies
+        sequence_length: Length of sequences if anomalies are at sequence level
         title: Plot title
         figsize: Figure size (width, height)
-
-    Returns:
-        None (shows plot)
-
-    >>> import numpy as np
-    >>> import pandas as pd
-    >>> data = pd.DataFrame([1.0, 2.0, 3.0, 4.0, 5.0])
-    >>> anomalies = np.array([False, False, True, False, False])
-    >>> plot_time_series(data, anomalies)  # Shows plot
 
     """
     plt.figure(figsize=figsize)
@@ -57,12 +50,23 @@ def plot_time_series(
 
     # Highlight anomalies if provided
     if anomalies is not None:
-        if len(anomalies) != len(data_series):
+        # Check if we need to convert sequence anomalies to point anomalies
+        if sequence_length is not None and len(anomalies) != len(data_series):
+            # Convert sequence anomalies to point anomalies
+            point_anomalies = np.zeros(len(data_series), dtype=bool)
+            for i, is_anomaly in enumerate(anomalies):
+                if is_anomaly:
+                    point_anomalies[i : i + sequence_length] = True
+            anomaly_indices = np.where(point_anomalies)[0]
+        elif len(anomalies) == len(data_series):
+            # Anomalies already at point level
+            anomaly_indices = np.where(anomalies)[0]
+        else:
             raise ValueError(
-                f"Length mismatch: {len(anomalies)} anomalies vs {len(data_series)} data points"
+                f"Length mismatch: {len(anomalies)} anomalies vs {len(data_series)} data points. "
+                f"If these are sequence anomalies, provide sequence_length."
             )
 
-        anomaly_indices = np.where(anomalies)[0]
         plt.scatter(
             anomaly_indices,
             data_series.iloc[anomaly_indices]
@@ -175,7 +179,7 @@ def visualise_reconstruction(
     >>> import numpy as np
     >>> original = np.sin(np.linspace(0, 10, 100)).reshape(1, 100, 1)
     >>> reconstructed = original * 0.9  # Slightly different reconstruction
-    >>> visualize_reconstruction(original, reconstructed)  # Shows plot
+    >>> visualise_reconstruction(original, reconstructed)  # Shows plot
 
     """
     plt.figure(figsize=figsize)
