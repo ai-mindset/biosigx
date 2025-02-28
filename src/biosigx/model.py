@@ -1,5 +1,4 @@
-"""
-Model architecture module for time series anomaly detection.
+"""Model architecture module for time series anomaly detection.
 
 This module provides functions for building and evaluating autoencoder models
 that detect anomalies in time series data by learning normal patterns and
