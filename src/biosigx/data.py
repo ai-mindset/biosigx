@@ -21,6 +21,7 @@ from sklearn.preprocessing import StandardScaler
 from biosigx.logger import setup_logger
 
 # %% [markdown]
+
 # ## Logger Setup
 # %%
 logger = setup_logger()

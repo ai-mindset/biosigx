@@ -78,7 +78,7 @@ def compute_threshold(
 
     Args:
         model: Trained autoencoder model
-        train_data: Training data used to establish normal behavior
+        train_data: Training data used to establish normal behaviour
         percentile: Percentile to use for threshold computation
 
     Returns:
