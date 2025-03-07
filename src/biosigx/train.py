@@ -21,6 +21,8 @@ from biosigx.model import compute_threshold
 
 # %% [markdown]
 # ## Logger Setup
+
+
 # %%
 logger = setup_logger()
 
@@ -60,8 +62,8 @@ def train_model(
 
     """
     history = model.fit(
-        train_data,
-        train_data,
+        x=train_data,
+        y=train_data,  # In an autoencoder, we're teaching the model to copy the input perfectly
         validation_split=validation_split,
         batch_size=batch_size,
         epochs=epochs,

@@ -21,8 +21,8 @@ from sklearn.preprocessing import StandardScaler
 from biosigx.logger import setup_logger
 
 # %% [markdown]
-
 # ## Logger Setup
+
 # %%
 logger = setup_logger()
 
@@ -97,7 +97,7 @@ def process_data(
         scaler: Optional pre-fitted StandardScaler for normalization
 
     Returns:
-        Tuple of (normalized sequences, fitted scaler)
+        Tuple of (normalised sequences, fitted scaler)
 
     >>> import numpy as np
     >>> import pandas as pd
@@ -111,11 +111,11 @@ def process_data(
     """
     if scaler is None:
         scaler = StandardScaler()
-        normalized = scaler.fit_transform(data)
+        normalised = scaler.fit_transform(data)
     else:
-        normalized = scaler.transform(data)
+        normalised = scaler.transform(data)
 
-    sequences = prepare_sequences(normalized, sequence_length)
+    sequences = prepare_sequences(normalised, sequence_length)
     return sequences, scaler
 
 

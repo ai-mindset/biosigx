@@ -12,6 +12,24 @@ identifying deviations.
 # anomaly detection. The model learns to compress and reconstruct normal patterns
 # in the data, which allows it to identify anomalies as sequences it fails to
 # reconstruct accurately.
+#
+# ## Why an autoencoder?
+# An autoencoder learns to compress normal data into a lower-dimensional representation
+# and then reconstruct it. The key insight is that this compression-decompression process
+# is optimised for patterns that frequently appear in the training data.
+#
+# ## Why This Works for Anomaly Detection
+#
+# 1. **Forced Dimensionality Reduction**: The bottleneck in the architecture (when we go
+# from 32 filters to 16) forces the model to learn only the most essential patterns in
+# normal data.
+# 2. **Pattern Recognition**: During training, the model only sees normal patterns and
+# optimises reconstruction for these patterns.
+# 3. **Anomaly Hypothesis**: When an anomaly appears, it contains patterns the model
+# hasn't seen during training. The model struggles to compress and reconstruct these
+# unfamiliar patterns accurately, resulting in higher reconstruction error.
+# 4. **Unsupervised Learning**: Unlike classification, we don't need labelled examples
+# of anomalies, which are often rare and diverse.
 
 # %%
 import keras

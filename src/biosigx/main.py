@@ -14,7 +14,16 @@ point for the application.
 # 2. Build and train an autoencoder model
 # 3. Establish an anomaly detection threshold
 # 4. Detect anomalies in new data
-# 5. Visualize results
+# 5. Visualise results
+#
+# This implementation
+# - Uses minimal dependencies
+# - Is fully typed and passes Pyright checks
+# - Follows clean code principles with small, focused functions
+# - Uses composition over inheritance
+# - Handles data processing, model training, and anomaly detection in separate modules
+# - Includes proper error handling and validation
+# - Is easy to test and maintain
 
 # %%
 import keras
@@ -50,7 +59,7 @@ def run_anomaly_detection(
     epochs: int = 50,
     visualise: bool = True,
 ) -> tuple[NDArray[np.bool_], keras.Model, float]:
-    """Run the complete anomaly detection pipeline.
+    r"""Run the complete anomaly detection pipeline.
 
     Args:
         data: CSV-formatted string containing time series data
@@ -124,7 +133,7 @@ def run_anomaly_detection(
     )
     logger.info(f"Anomaly rate: {np.mean(all_anomalies):.2%}")
 
-    # Visualize if requested
+    # Visualise if requested
     if visualise:
         # Plot error distribution
         plot_reconstruction_error(all_errors, threshold)
@@ -137,7 +146,7 @@ def run_anomaly_detection(
             title="Time Series with Detected Anomalies",
         )
 
-        # Visualize reconstructions
+        # Visualise reconstructions
         normal_idx = np.where(~all_anomalies)[0][0]
         anomaly_idx = np.where(all_anomalies)[0][0] if np.any(all_anomalies) else None
 
